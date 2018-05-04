@@ -39,6 +39,21 @@ selectList="selected.star"
 # SPHERICAL_ABERRATION REAL, 
 # PROTEIN_IS_WHITE INTEGER
 
+
+def write_star(starfile, star, reindex=False):
+    if not starfile.endswith(".star"):
+        starfile += ".star"
+    with open(starfile, 'w') as f:
+        f.write('\n')
+        f.write("data_images" + '\n')
+        f.write('\n')
+        f.write("loop_" + '\n')
+        for i in range(len(star.columns)):
+            line = star.columns[i] + " \n"
+            line = line if line.startswith('_') else '_' + line
+            f.write(line)
+    star.to_csv(starfile, mode='a', sep=' ', header=False, index=False)
+
 #retrieve the master list of all particles from cisTEM database and the file path 
 conn = sqlite3.connect(masterDb)
 allparticles = pd.read_sql_query("""
@@ -51,5 +66,9 @@ allparticles = pd.read_sql_query("""
 conn.close()
 #print(allparticles)
 
-selected = pd.read_csv("selected.csv",sep=',',header=1)
+selected = pd.read_csv("cryosparc_exp000074_iter20_selected_from_000078.csv",sep=',')
+merged=selected.merge(allparticles,left_on='uid',right_on='PARTICLE_POSITION_ASSET_ID')
+write_star("output.star",merged)
 
+# add support for recasting path of image files
+# select only useful columns of csparc
