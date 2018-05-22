@@ -64,10 +64,13 @@ allparticles = pd.read_sql_query("""
    from image_assets, particle_position_assets where 
    image_assets.image_asset_id = particle_position_assets.parent_image_asset_id;""", conn)
 conn.close()
-#print(allparticles)
+print(allparticles.columns)
 
-selected = pd.read_csv("cryosparc_exp000074_iter20_selected_from_000078.csv",sep=',')
+#skip empty lines, titles, and datatypes in csparc csv
+selected = pd.read_csv("cryosparc_selected.csv",sep=',')
 merged=selected.merge(allparticles,left_on='uid',right_on='PARTICLE_POSITION_ASSET_ID')
+print(selected.columns)
+#hash csparc column names to relion _rln...
 write_star("output.star",merged)
 
 # add support for recasting path of image files
