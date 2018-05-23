@@ -57,20 +57,19 @@ def write_star(starfile, star, reindex=False):
 #retrieve the master list of all particles from cisTEM database and the file path 
 conn = sqlite3.connect(masterDb)
 allparticles = pd.read_sql_query("""
-   select PARTICLE_POSITION_ASSET_ID, 
+   select cast(PARTICLE_POSITION_ASSET_ID as int) as ppid, 
    filename,
    x_position, 
-   y_position 
+   y_position
    from image_assets, particle_position_assets where 
    image_assets.image_asset_id = particle_position_assets.parent_image_asset_id;""", conn)
 conn.close()
-print(allparticles.columns)
 
-#skip empty lines, titles, and datatypes in csparc csv
-selected = pd.read_csv("cryosparc_selected.csv",sep=',')
-merged=selected.merge(allparticles,left_on='uid',right_on='PARTICLE_POSITION_ASSET_ID')
-print(selected.columns)
-#hash csparc column names to relion _rln...
+#Todo: skip empty lines, titles, and datatypes in csparc csv
+selected = pd.read_csv("cryosparc_selected.csv",sep=',',dtype={'uid':int})
+merged=selected.merge(allparticles, left_on='uid',right_on='ppid')
+
+#Todo: hash csparc column names to relion _rln...
 write_star("output.star",merged)
 
 # add support for recasting path of image files
