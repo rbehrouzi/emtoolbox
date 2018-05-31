@@ -39,10 +39,17 @@ selectList="selected.star"
 # SPHERICAL_ABERRATION REAL, 
 # PROTEIN_IS_WHITE INTEGER
 
+#ctf_params.akv,ctf_params.angast_deg,ctf_params.angast_rad,ctf_params.cs,ctf_params.detector_psize,
+# ctf_params.df1,ctf_params.df2,ctf_params.mag,ctf_params.phase_shift,ctf_params.psize,
+# ctf_params.wgh,data_input_relpath,data_input_idx,alignments.model-best.phiC
 
 def write_star(starfile, star, reindex=False):
-    dict_csparc2rln={'X_POSITION':'_rlnCoordinateX', 'Y_POSITION':'_rlnCoordinateY'}
-    
+    dict_merge2rln={'X_POSITION':'rlnCoordinateX', 'Y_POSITION':'rlnCoordinateY',
+                     'FILENAME':'rlnImageName', 'NAME':'rlnMicrographName',
+                     'ctf_params.df1':'rlnDefocusU','ctf_params.df2':'rlnDefocusV',
+                     'ctf_params.angast_deg':'rlnDefocusAngle', 'ctf_params.akv':'rlnVoltage',
+                     'ctf_params.cs':'rlnSphericalAberration', 'ctf_params.wgh':'rlnAmplitudeContrast'}
+
     if not starfile.endswith(".star"):
         starfile += ".star"
     with open(starfile, 'w') as f:
@@ -51,8 +58,8 @@ def write_star(starfile, star, reindex=False):
         f.write('\n')
         f.write("loop_" + '\n')
         for i in range(len(star.columns)):
-            line = dict_csparc2rln[star.columns[i]] + " \n"
-            #line = line if line.startswith('_') else '_' + line
+            line = dict_merge2rln[star.columns[i]] + " \n"
+            line = line if line.startswith('_') else '_' + line
             f.write(line)
     star.to_csv(starfile, mode='a', sep=' ', header=False, index=False)
 
@@ -60,7 +67,7 @@ def write_star(starfile, star, reindex=False):
 conn = sqlite3.connect(masterDb)
 allparticles = pd.read_sql_query("""
    select cast(PARTICLE_POSITION_ASSET_ID as int) as ppid, 
-   filename,
+   filename,name,
    x_position, 
    y_position
    from image_assets, particle_position_assets where 
@@ -72,7 +79,9 @@ selected = pd.read_csv("cryosparc_selected.csv",sep=',',dtype={'uid':int})
 merged=selected.merge(allparticles, left_on='uid',right_on='ppid')
 
 #Todo: hash csparc column names to relion _rln...
-write_star("output.star",merged[['X_POSITION', 'Y_POSITION']])
+columns_for_relion=['X_POSITION', 'Y_POSITION', 'FILENAME', 'NAME','ctf_params.df1','ctf_params.df2','ctf_params.angast_deg','ctf_params.akv',
+                    'ctf_params.cs','ctf_params.wgh']
+write_star("output.star",merged[columns_for_relion])
 
 # add support for recasting path of image files
 # select only useful columns of csparc
