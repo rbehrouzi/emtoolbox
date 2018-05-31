@@ -42,6 +42,7 @@ selectList="selected.star"
 
 def write_star(starfile, star, reindex=False):
     dict_csparc2rln={'X_POSITION':'_rlnCoordinateX', 'Y_POSITION':'_rlnCoordinateY'}
+    
     if not starfile.endswith(".star"):
         starfile += ".star"
     with open(starfile, 'w') as f:
