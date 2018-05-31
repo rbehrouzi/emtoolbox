@@ -41,6 +41,7 @@ selectList="selected.star"
 
 
 def write_star(starfile, star, reindex=False):
+    dict_csparc2rln={'X_POSITION':'_rlnCoordinateX', 'Y_POSITION':'_rlnCoordinateY'}
     if not starfile.endswith(".star"):
         starfile += ".star"
     with open(starfile, 'w') as f:
@@ -49,8 +50,8 @@ def write_star(starfile, star, reindex=False):
         f.write('\n')
         f.write("loop_" + '\n')
         for i in range(len(star.columns)):
-            line = star.columns[i] + " \n"
-            line = line if line.startswith('_') else '_' + line
+            line = dict_csparc2rln[star.columns[i]] + " \n"
+            #line = line if line.startswith('_') else '_' + line
             f.write(line)
     star.to_csv(starfile, mode='a', sep=' ', header=False, index=False)
 
@@ -70,7 +71,12 @@ selected = pd.read_csv("cryosparc_selected.csv",sep=',',dtype={'uid':int})
 merged=selected.merge(allparticles, left_on='uid',right_on='ppid')
 
 #Todo: hash csparc column names to relion _rln...
-write_star("output.star",merged)
+write_star("output.star",merged[['X_POSITION', 'Y_POSITION']])
 
 # add support for recasting path of image files
 # select only useful columns of csparc
+#_rlnCoordinateX #1 
+#_rlnCoordinateY #2 
+#_rlnClassNumber #3 
+#_rlnAnglePsi #4 
+#_rlnAutopickFigureOfMerit #5 
