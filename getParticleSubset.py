@@ -74,7 +74,7 @@ allparticles = pd.read_sql_query("""
    image_assets.image_asset_id = particle_position_assets.parent_image_asset_id;""", conn)
 conn.close()
 
-#Todo: skip empty lines, titles, and datatypes in csparc csv
+#TODO: process header lines of csparc csv
 selected = pd.read_csv("cryosparc_selected.csv",sep=',',dtype={'uid':int})
 merged=selected.merge(allparticles, left_on='uid',right_on='ppid')
 
