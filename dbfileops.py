@@ -6,7 +6,7 @@ masterDb="din-20bp.db"
 conn = sqlite3.connect(masterDb)
 image_group_names = pd.read_sql_query("select * from image_group_list",conn)
 print(image_group_names)
-group_id = input("What is the group ID?")
+group_id = input("\nWhat is the group ID? ")
 selected_image_group = "image_group_"+group_id
 
 files_in_image_group = pd.read_sql_query("select filename from image_assets, " + selected_image_group + 
