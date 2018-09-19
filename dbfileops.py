@@ -7,12 +7,15 @@ import pandas as pd
 import sqlite3
 import os
 
-masterDb="din-20bp.db"
+masterDb="/data/reza/cisTEM/din-20bp/din-20bp.db"
+#masterDb = input("Path to SQL databse ["+masterDb+"] "); 
+print("working on "+masterDb)
+
 conn = sqlite3.connect(masterDb)
-image_group_names = pd.read_sql_query("select * from image_group_list",conn)
+image_group_names = pd.read_sql_query("select * from IMAGE_GROUP_LIST",conn)
 print(image_group_names)
-group_id = input("\nWhat is the group ID? ")
-selected_image_group = "image_group_"+group_id
+group_id = input("\nWhat is the group_ID? ")
+selected_image_group = "IMAGE_GROUP_"+group_id
 
 files_in_image_group = pd.read_sql_query("select filename from image_assets, " + selected_image_group + 
    " where image_assets.image_asset_id = " + selected_image_group + ".image_asset_id;", conn)
@@ -27,5 +30,4 @@ for filename in files_in_image_group['FILENAME'].tolist():
         os.remove(target_file)
     else:
         print("target file does not exist: "+target_file)
-
 
