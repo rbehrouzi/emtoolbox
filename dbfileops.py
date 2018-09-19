@@ -1,3 +1,8 @@
+## use this script to remove files corresponding to items in a specific database table
+## the intended use is to remove micrograph files or symlinks corresponding to bad items in cisTEM
+## To use, create a table containing all low quality micrographs in CisTEM
+## then point this script to the folder containing all micrographs (or symlinks)
+
 import pandas as pd
 import sqlite3
 import os
