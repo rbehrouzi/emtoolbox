@@ -46,9 +46,10 @@ def starToDf (full_filename):
                     names=headers)
     return starDf
 
-starfile="/data/reza/relion/20180905/particles.star"
-listfile="/data/reza/sam/SVMS1_fp_F100.plt"
+star_file="/data/reza/relion/20180905/particles.star"
+list_file="/data/reza/sam/SVMS1_fp_F100.plt"
+selection_file="particles_selected.star"
 
-selected_rows = pd.read_csv(listfile, headers=None, squeeze=True, dtype=int, usecols=[0]) #return as series
-alldata_df=starToDf(starfile)
+selected_rows = pd.read_csv(list_file, headers=None, squeeze=True, dtype=int, usecols=[0]) #return as series
+alldata_df=starToDf(star_file)
 dfToStar(selection_file, alldata_df.iloc(selected_rows))
