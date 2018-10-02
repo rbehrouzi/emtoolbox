@@ -104,8 +104,7 @@ def csmGetSubset(masterDb, selectList):
 
     #retrieve the master list of all particles from cisTEM database and the file path 
     conn = sqlite3.connect(masterDb)
-    allparticles = pd.read_sql_query("""
-    select cast(PARTICLE_POSITION_ASSET_ID as int) as ppid, 
+    allparticles = pd.read_sql_query("""select cast(PARTICLE_POSITION_ASSET_ID as int) as ppid, 
     filename,name,
     x_position, 
     y_position
