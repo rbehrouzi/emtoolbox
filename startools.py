@@ -65,7 +65,7 @@ def readPltChain(list_file,check_parent):
     return read_lines
 
 
-selection_file="particles_selected.star"
+selection_file="./extras/particles_selected.star"
 default_star = "./extras/particles.star"
 default_list = "./extras/SVMS1_sam_good_fp100.plt"
 
