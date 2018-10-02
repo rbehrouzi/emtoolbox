@@ -1,5 +1,5 @@
 import pandas as pd
-
+import numpy as np
 def dfToStar(full_filename, data_table, conversion_dict={}):
 # write pandas dataframe as start file
 # if a conversion dictionary is provided, table column headers are converted accordingly
@@ -11,10 +11,10 @@ def dfToStar(full_filename, data_table, conversion_dict={}):
         f.write('\n')
         f.write("loop_" + '\n')
         for i in range(len(data_table.columns)):
-            if conversion_dict.isempty():
-                line = data_table.columns[i] + "\n"
-            else:
+            if conversion_dict: #empty dict is False
                 line = conversion_dict[data_table.columns[i]] + " \n"
+            else:
+                line = data_table.columns[i] + "\n"
             line = line if line.startswith('_') else '_' + line
             f.write(line)
 
@@ -41,15 +41,19 @@ def starToDf (full_filename):
                     break
             lineskip_count += 1
         
-        starDf= pd.read_table(full_filename, delimiter=' ', header=None, 
+        starDf= pd.read_table(full_filename, delimiter=' ', header=None, index_col=False,
                     skipinitialspace=True, skiprows=lineskip_count,
                     names=headers)
     return starDf
 
-star_file="/data/reza/relion/20180905/particles.star"
-list_file="/data/reza/sam/SVMS1_fp_F100.plt"
+star_file="particles.star"
+list_file="samr4_particles_ingoodclasses.plt"
 selection_file="particles_selected.star"
+selected_rows=[]
 
-selected_rows = pd.read_csv(list_file, headers=None, squeeze=True, dtype=int, usecols=[0]) #return as series
+with open(list_file) as f:
+    for line in f:
+        selected_rows.append(int(line)-1) #convert to zero-based index
+
 alldata_df=starToDf(star_file)
-dfToStar(selection_file, alldata_df.iloc(selected_rows))
+dfToStar(selection_file, alldata_df.loc[selected_rows,:]) 

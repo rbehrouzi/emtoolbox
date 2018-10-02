@@ -9,11 +9,3 @@ GNU parallel: https://www.gnu.org/software/parallel/ (O. Tange (2018): GNU Paral
 
 IMOD: http://bio3d.colorado.edu/imod/
 
-## getParticleSubset
-Python script; extract a subset of particles from databases or star file, merging information across two sources.
-Inputs: 
-1. database/star file containing all particle positions
-2. star/csv file containing selected particles without particle positions
-
-Output:
-star file containing selected particles with particle positions
