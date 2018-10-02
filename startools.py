@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy as np
+
 def dfToStar(full_filename, data_table, conversion_dict={}):
 # write pandas dataframe as start file
 # if a conversion dictionary is provided, table column headers are converted accordingly
@@ -46,14 +46,34 @@ def starToDf (full_filename):
                     names=headers)
     return starDf
 
-star_file="particles.star"
-list_file="samr4_particles_ingoodclasses.plt"
+def readPltChain(list_file,check_parent):
+    read_lines=[]
+    with open(list_file) as f:
+        for line in f:
+            read_lines.append(int(line)-1) #convert to zero-based index
+    
+    if check_parent:
+        resp = input("\nIs "+list_file+" a subset of a previous selection file? [Y/N]")
+        if resp.upper()=="Y":
+            parent_list_file = input("\nWhat is the parent PLT file? ")
+            ##TODO: check existence, etc.
+            sub_selection = read_lines
+            parent_lines=readPltChain(parent_list_file,check_parent)
+            read_lines=[parent_lines[i] for i in sub_selection]
+        else:
+            check_parent=False
+    return read_lines
+
+
 selection_file="particles_selected.star"
-selected_rows=[]
+default_star = "./extras/particles.star"
+default_list = "./extras/SVMS1_sam_good_fp100.plt"
 
-with open(list_file) as f:
-    for line in f:
-        selected_rows.append(int(line)-1) #convert to zero-based index
+resp = input("\nWhat is the parent STAR file? ["+default_star+"]")
+star_file= default_star if not resp else resp
+resp = input("\nWhat is the selection PLT file? ["+default_list+"]")
+list_file= default_list if not resp else resp
 
+selected_rows=readPltChain(list_file,True) #check if this is a sublist
 alldata_df=starToDf(star_file)
 dfToStar(selection_file, alldata_df.loc[selected_rows,:]) 
