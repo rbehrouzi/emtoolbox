@@ -47,6 +47,8 @@ def starToDf (full_filename):
     return starDf
 
 def readPltChain(list_file,check_parent):
+# Reads SAMUEL (Maofu Liao) PLT files that contain selection numbers 
+# It can iteratively navigate back through sub-selections if PLT files correspond to a parent PLT file
     read_lines=[]
     with open(list_file) as f:
         for line in f:
