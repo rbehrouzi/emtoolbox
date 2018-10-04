@@ -65,7 +65,7 @@ def readPltChain(list_file,check_parent):
     return read_lines
 
 
-selection_file="./extras/particles_selected.star"
+default_output="./extras/particles_selected.star"
 default_star = "./extras/particles.star"
 default_list = "./extras/SVMS1_sam_good_fp100.plt"
 
@@ -73,7 +73,9 @@ resp = input("\nWhat is the parent STAR file? ["+default_star+"]")
 star_file= default_star if not resp else resp
 resp = input("\nWhat is the selection PLT file? ["+default_list+"]")
 list_file= default_list if not resp else resp
+resp = input("\nName of outputfile? ["+default_output+"]")
 
 selected_rows=readPltChain(list_file,True) #check if this is a sublist
 alldata_df=starToDf(star_file)
-dfToStar(selection_file, alldata_df.loc[selected_rows,:]) 
+output_file= default_output if not resp else resp
+dfToStar(output_file, alldata_df.loc[selected_rows,:]) 
