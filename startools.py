@@ -7,7 +7,7 @@ import pandas as pd
 from EMAN2 import *
 import os, ntpath,sys
 
-   # make python3 input command backward compatible
+# make python3 input syntax work in python2 of eman2
 try:
     input = raw_input
 except NameError:
