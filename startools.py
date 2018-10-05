@@ -7,6 +7,12 @@ import pandas as pd
 from EMAN2 import *
 import os, ntpath,sys
 
+   # make python3 input command backward compatible
+try:
+    input = raw_input
+except NameError:
+    pass
+
 def main():
     # main() block. Each program will have a single function called main() which is executed when the
     # program is used from the command-line. Programs must also be 'import'able themselves, so you
