@@ -1,4 +1,4 @@
 {
-    "python.pythonPath": "/home/behrouzi/anaconda3/envs/eman2/bin/python",
+    "python.pythonPath": "/Users/behrouzi/anaconda3/bin/python",
     "python.envFile": "${workspaceFolder}/.env"
 }
