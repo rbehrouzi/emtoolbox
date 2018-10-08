@@ -152,9 +152,10 @@ def starParticleStack():
     star_df = starToDf(star_file)
     mrcs_list = star_df["_rlnImageName"].apply(ntpath.basename)
     mrcs_list = mrcs_list.apply('/'.join)
-    if not mrcs_list:
-        e2lsx_obj = LSXFile(star_file+".lsx") #LSXFile object to write out selection
+    
+    e2lsx_obj = LSXFile(output_mrcs+".lsx") #LSXFile object to write out selection
     #for stack_name in mrcs_list:
+        #write records in lsx file
 
     e2lsx_obj.write(-1, idx_stack, mrcs_folder+stack_name)  # append
 
