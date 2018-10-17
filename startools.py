@@ -31,7 +31,7 @@ def main():
     #parser.add_argument("--oneclass", type=int, help="Create only a single class-average. Specify the number.",default=None)
     #parser.add_argument("--verbose", "-v", dest="verbose", action="store", metavar="n",type=int, default=0, help='verbose level [0-9], higher number means higher level of verboseness')
 
-    #(options, args) = parser.parse_args()
+    #(options, args) = parser.parse_args()skimage
 
     # Now we have a call to the function which actually implements the functionality of the program
     # main() is really just for parsing command-line arguments, etc.  The actual program algorithms 
@@ -46,7 +46,7 @@ def main():
     #for im in results: im.write_image(options.output,-1)
     #E2end(E2n)
 
-    starParticleStack()
+    starSelectPlt()
 
 def dfToStar(full_filename, data_table, conversion_dict={}):
 # write pandas dataframe as start file
@@ -157,7 +157,7 @@ def starParticleStack():
     #for stack_name in mrcs_list:
         #write records in lsx file
 
-    e2lsx_obj.write(-1, idx_stack, mrcs_folder+stack_name)  # append
+    #e2lsx_obj.write(-1, idx_stack, mrcs_folder+stack_name)  # append
 
 
 # This block must always be the last thing in the program and calls main()
