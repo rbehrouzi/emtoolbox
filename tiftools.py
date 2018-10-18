@@ -7,78 +7,86 @@ import multiprocessing as mp
 import sys, getopt
 
 def main():
-	global settings
-   try:
-      opts, etc = getopt.getopt(sys.argv,"hc:",["config="])
-   except getopt.GetoptError:
-      print("tiftools.py -c <configfile>")
-      sys.exit(2)
-   for opt, arg in opts:
-	   if opt == '-h':
-         print("tiftools.py -c <configfile>")
-         sys.exit()
+	try:
+		opts, args = getopt.getopt(sys.argv[1:],"c:h",["config="])
+	except getopt.GetoptError:
+		print("tiftools.py -c <configfile>")
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print("tiftools.py -c <configfile>")
+			sys.exit()
 		elif opt in ("-c", "--config"):
-         configfile = arg
+			configfile = arg
 		else:
 			pass
-		
-	tiffiles=settings['tif_files']
-	functionname=settings['tool_name']
-	if settings['run_mode']='parallel':
-		parallelize(functionname, tiffiles)
+
+	settings = readconfiguration(configfile)
+	print(f"Running {settings['tif_tool']} in {settings['run_mode']}")
+
+	if settings['run_mode']=='parallel':
+		parallelize(settings)
 	else:
-		serialize(functionname, tiffiles)
+		serialize(settings)
 
 def readconfiguration(configfile):
-	
-	searchPath=settings['search_path']
-	tiffiles=glob.glob(f"{inPath}*.tif")
-	
+	if not configfile:
+		print("Config file not found.")
+		exit(2)
+	settings={}
+	with open(configfile) as cfobj:
+		for line in cfobj:
+			if line[0]=='-':
+				config, value=line[1:].split()
+				settings[config]=value
+			else:
+				pass
 
+	settings['tif_files']=glob.glob(f"{settings['search_path']}/*.tif")
+	return settings
 
-def cropframes(tifstack):
+def serialize(settings):
+	functionname=settings['tif_tool']
+	tiffiles=settings['tif_files']
+	for tifimage in tiffiles:
+		eval(f"{functionname}('{tifimage}',settings)")
 
-	framerange=range(40) #) to 39
-#	file_head, file_tail = ntpath.split(tifstack)
-#	file_basename, file_ext=ntpath.splitext(file_tail)
-#	fixedfile = f"{file_head}/{file_basename}_fix{file_ext}"
-	fixedfile = f"{tifstack}.fix"
-	with tif.TiffFile(tifstack) as im:
-		imdata = im.asarray() #tif data as numpy array
-		tif.imsave(fixedfile,imdata[framerange,:,:],bigtiff=True,compress=5)
-	
-def serialize(functionname,tiffiles):
-	for tifstack in tiffiles:
-		functionname(tifstack)
-
-def parallelize(functionname,tiffiles):
+def parallelize(settings):
+	functionname=settings['tif_tool']
+	tiffiles=settings['tif_files']
 	cores=mp.cpu_count()
 	pool = mp.Pool(processes=np.min([cores,len(tiffiles)]))
 	jobs = []
 	#create a job list, overhead is only the name of the tif files
-	for tifstack in tiffiles:
-		jobs.append(pool.apply_async(functionname,(tifstack,)))
-
+	for tifimage in tiffiles:
+		jobs.append(pool.apply_async(eval(functionname),args=(tifimage,settings)))
 	#run jobs
 	for job in jobs:
 		job.get()
-
 	pool.close()
 
-def fixtiff(tifstack):
+def cropframes(tifimage,settings):
+	print(f"working on {tifimage}")
+	framerange = range(int(settings['start_frame']), int(
+		settings['end_frame']), int(settings['step_size']))
+	fixedfile = f"{tifimage}.fix"
+	with tif.TiffFile(tifimage) as im:
+		imdata = im.asarray() #tif data as numpy array
+		tif.imsave(fixedfile,imdata[framerange,:,:],bigtiff=True,compress=5)
+	print("saved " + fixedfile)
 
-	print("fixing "+ tifstack)
-#	file_head, file_tail = ntpath.split(tifstack)
-#	file_basename, file_ext=ntpath.splitext(file_tail)
-#	fixedfile = f"{file_head}/{file_basename}{file_ext}"
-	fixedfile = f"{tifstack}.fix"
-	with tif.TiffFile(tifstack) as im:
+def removebar(tifimage,settings):
+	goodBox = [int(el.strip()) for el in settings['good_box'].split(',')]
+	badBox =  [int(el.strip()) for el in settings['bad_box'].split(',')]
+	print(f"working on {tifimage}")
+	fixedfile = f"{tifimage}.fix"
+	with tif.TiffFile(tifimage) as im:
 		imdata = im.asarray() #tif data as numpy array
 		goodData=np.reshape(imdata[:,goodBox[0]:goodBox[1],goodBox[2]:goodBox[3]],-1)
 		np.random.shuffle(goodData)
 		imdata[:,badBox[0]:badBox[1],badBox[2]:badBox[3]]=np.reshape(goodData,(imdata.shape[0],badBox[1]-badBox[0],-1))
 	tif.imsave(fixedfile,imdata,bigtiff=True,compress=5)
-	print("saved "+ fixedfile)
+	print(f"saved {fixedfile}")
 	return 
 
 if __name__ == '__main__':
