@@ -1,4 +1,3 @@
-
 import tifffile as tif
 import numpy as np
 import glob
