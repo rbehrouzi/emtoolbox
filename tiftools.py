@@ -43,6 +43,9 @@ def readconfiguration(configfile):
 				pass
 
 	settings['tif_files']=glob.glob(f"{settings['search_path']}/*.tif")
+	if settings['max_load']==0:
+		settings['max_load']= min(mp.cpu_count(),len(settings['tif_files']))
+	
 	return settings
 
 def serialize(settings):
@@ -54,12 +57,13 @@ def serialize(settings):
 def parallelize(settings):
 	functionname=settings['tif_tool']
 	tiffiles=settings['tif_files']
-	cores=mp.cpu_count()
-	pool = mp.Pool(processes=np.min([cores,len(tiffiles)]))
+	shares=mp.Manager()
+	sharedsettings=shares.dict(settings)
+	pool = mp.Pool(processes=settings['max_load'])
 	jobs = []
 	#create a job list, overhead is only the name of the tif files
 	for tifimage in tiffiles:
-		jobs.append(pool.apply_async(eval(functionname),args=(tifimage,settings)))
+		jobs.append(pool.apply_async(eval(functionname),args=(tifimage,sharedsettings)))
 	#run jobs
 	for job in jobs:
 		job.get()
