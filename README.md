@@ -1,7 +1,14 @@
 ## EM Toolbox
-tiftools -c <configfile>
-    cropframs : select a range of frames with defined spacing
-    removebar : cirumvent detector malfunction resulting in black bar in tif movies. overwrite it with randomized data from elsewhere in image
+Tools in python 3 for working with common files encountered in cryo EM
 
-startools
+#TifTools
+
+usage: python tiftools.py -c <configfile>
+
+see tiftools.conf for all available settings and definitions
+    
+    cropframs : select a range of frames with defined spacing
+    removebar : circumvent detector malfunction resulting in black bar in tif movies. overwrite it with randomized data from elsewhere in image
+
+#startools
     loads star file as pandas dataframe for various operations
