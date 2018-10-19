@@ -43,6 +43,7 @@ def readconfiguration(configfile):
 				pass
 
 	settings['tif_files']=glob.glob(f"{settings['search_path']}/*.tif")
+	settings['max_load']=int(settings['max_load'])
 	if settings['max_load']==0:
 		settings['max_load']= min(mp.cpu_count(),len(settings['tif_files']))
 	
@@ -57,17 +58,20 @@ def serialize(settings):
 def parallelize(settings):
 	functionname=settings['tif_tool']
 	tiffiles=settings['tif_files']
-	shares=mp.Manager()
+	shares=mp.Manager() #for data available to all processes
 	sharedsettings=shares.dict(settings)
-	pool = mp.Pool(processes=settings['max_load'])
-	jobs = []
-	#create a job list, overhead is only the name of the tif files
+	workers = mp.Pool(processes=settings['max_load'],initializer=None,initargs=None,maxtasksperchild=1) # create new workers for every file to free up any resources
+
+	workStat = []
 	for tifimage in tiffiles:
-		jobs.append(pool.apply_async(eval(functionname),args=(tifimage,sharedsettings)))
-	#run jobs
-	for job in jobs:
-		job.get()
-	pool.close()
+		workStat.append(workers.apply_async(func=eval(functionname),args=(tifimage,sharedsettings)))
+	workers.close()
+	workers.join()  # wait till everything is done
+	if all (map(mp.pool.AsyncResult.successful, workStat)):
+		print("all files processed successfully")
+	else:
+		print("some processes failed.")
+	return
 
 def cropframes(tifimage,settings):
 	print(f"working on {tifimage}")
