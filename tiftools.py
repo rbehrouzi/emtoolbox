@@ -1,4 +1,3 @@
-
 import tifffile as tif
 import numpy as np
 import glob
@@ -62,12 +61,12 @@ def parallelize(settings):
 	sharedsettings=shares.dict(settings)
 	workers = mp.Pool(processes=settings['max_load'],initializer=None,initargs=None,maxtasksperchild=1) # create new workers for every file to free up any resources
 
-	workStat = []
+	results = []
 	for tifimage in tiffiles:
-		workStat.append(workers.apply_async(func=eval(functionname),args=(tifimage,sharedsettings)))
+		results.append(workers.apply_async(func=eval(functionname),args=(tifimage,sharedsettings)))
 	workers.close()
 	workers.join()  # wait till everything is done
-	if all (map(mp.pool.AsyncResult.successful, workStat)):
+	if all (map(mp.pool.AsyncResult.successful, results)):
 		print("all files processed successfully")
 	else:
 		print("some processes failed.")

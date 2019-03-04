@@ -4,7 +4,7 @@
 # Quick start guide http://blake.bcm.edu/emanwiki/Eman2ProgQuickstart
 
 import pandas as pd
-from EMAN2 import *
+#from EMAN2 import *
 import os, ntpath,sys
 
 # make python3 input syntax work in python2 of eman2
@@ -46,7 +46,7 @@ def main():
     #for im in results: im.write_image(options.output,-1)
     #E2end(E2n)
 
-    starSelectPlt()
+    flipVcoord("20181015-particle-defocus.star",3710)
 
 def dfToStar(full_filename, data_table, conversion_dict={}):
 # write pandas dataframe as start file
@@ -159,6 +159,11 @@ def starParticleStack():
 
     #e2lsx_obj.write(-1, idx_stack, mrcs_folder+stack_name)  # append
 
+def flipVcoord(star_file, image_height):
+    # modify particle corrdinates to correspond to image flipped vertically
+    starDf = starToDf(star_file)
+    starDf['_rlnCoordinateY'] = image_height-starDf['_rlnCoordinateY']
+    dfToStar(f"{star_file}.flip",starDf)
 
 # This block must always be the last thing in the program and calls main()
 # if the program is executed, but not if it's imported
