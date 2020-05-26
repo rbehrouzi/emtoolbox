@@ -1,4 +1,4 @@
 {
-    "python.pythonPath": "/home/behrouzi/anaconda3/bin/python",
+    "python.pythonPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Anaconda3_64\\python.exe",
     "python.envFile": "${workspaceFolder}/.env"
 }
