@@ -5,27 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Tiftools: Terminal (integrated)",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/extensions",
-            "args": [
-                 "-c","tiftools.conf"
-            ]
-        },
-        {
-
-            "name": "Startools: (Integrated Terminal)",
+            "name": "imgman: Terminal (integrated)",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/extras",
-            "env": {
-                "LD_LIBRARY_PATH":"$LD_LIBRARY_PATH:/home/behrouzi/anaconda3/envs/eman2/lib"
-            }
+            "args": [
+                 "-c","tiftools.conf"
+            ]
         },
         {
             "name": "Python: Attach",
