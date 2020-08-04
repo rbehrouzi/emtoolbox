@@ -23,7 +23,7 @@ function [blockNames,blockData,ok]=ReadStarFile(name)
 
 % cd('/Users/fred/EMWork/relion13_tutorial/betagal/PrecalculatedResults/Refine3D')
 % 
-% name='post_run1.star';
+% Modified line 112 to prevent overflow of C -- Reza 8/4/2020
 
 blockNames={};
 blockData={};
@@ -126,7 +126,7 @@ while P<=numel(C) % loop through all the entries
     if loopMode  % Now the values follow immediately after the fieldnames
         nRows=0;
         fieldVals=cell(0,nFields);
-        while numel(C{P}{1})>=nFields
+        while P<=numel(C) && numel(C{P}{1})>=nFields
             nRows=nRows+1;
             fieldVals(nRows,:)=C{P}{1}';
             P=P+1;
