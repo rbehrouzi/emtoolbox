@@ -26,7 +26,7 @@ function [sumaligned, sumorigin] = alignsumstar (starfilepath, mrcpath_prefix,lo
     [~, hdr]=ReadMRC(stackfname{1},1,0);    
     sumorigin = zeros([hdr.nx, hdr.ny]);
     sumaligned = zeros([hdr.nx, hdr.ny]);
-    % center image on origin, so that imwarp rotation is applied to center
+    % change center of rotation to the center of image from corner
     Rin = imref2d([hdr.nx, hdr.ny]);
     Rin.XWorldLimits = Rin.XWorldLimits-mean(Rin.XWorldLimits);
     Rin.YWorldLimits = Rin.YWorldLimits-mean(Rin.YWorldLimits);

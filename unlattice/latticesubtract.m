@@ -1,4 +1,5 @@
 function latticesubtract()
+addpath('../EMIODist2'); % IO of star and mrcs files
 clear variables;
 %restoredefaultpath; matlabrc; close all;
 
@@ -11,7 +12,7 @@ expand_diameter=      1;    % expansion diameter of mask in pixels; applies to f
 
 
 templateImgPath=  'class5.mrc'; 
-template_img= ReadMRC(templateImgPath); template_img= double(template_img);
+template_img= double(ReadMRC(templateImgPath));
 
 % pad image to square
 imsize= size(template_img);
@@ -22,9 +23,36 @@ imgfft= fftshift(fft2(img_padded));
 logPS=log(abs(imgfft));
 [hotpixmsk, ~] = maskAboveThreshold(logPS,Threshold,expand_diameter,Pixel_Ang,Low_res_lim_Ang,Hi_res_lim_Ang);
 %TODO: adaptive radial threshold value is needed
-[img_sub, imgfft_sub]= applyMask(imgfft,hotpixmsk,'StdNormRand', Pixel_Ang);
-showTemplateDiagnositcs(template_img,imgfft, img_sub, imgfft_sub,padsize,Threshold); % display operation results on template
 
+[img_sub, imgfft_sub]= applyMask(imgfft,hotpixmsk,'StdNormRand', Pixel_Ang);
+%showTemplateDiagnositcs(template_img,imgfft, img_sub, imgfft_sub,padsize,Threshold); % display operation results on template
+
+starFilePath= 'aligned_ctf.star';
+mrcPathPrefix = './';
+[particleIdx, stackPath, alignInfo]= getStackHandle(starFilePath, mrcPathPrefix);
+
+openstackname = ""; fileno = 0;
+nParticles=length(particleIdx);
+img_sub = zeros(size(img_sub,1),size(img_sub,2),nParticles);
+
+for particle = 1:nParticles
+    if ~strcmpi(stackPath{particle},openstackname)
+        openstackname=stackPath{particle};
+        [stack, ~]=ReadMRC(stackPath{particle});
+        fileno = fileno + 1;
+%        fprintf(logger,"Now reading file %d. Total particles read so far is %d.\r",fileno, row);
+    end
+    img= double(stack(:,:,particleIdx(particle)));    
+    img_padded= padarray(img,  directional_padsize);
+    rotatedMask= applyRotation(hotpixmsk, size(img_padded,1), size(img_padded,2),alignInfo.anglePsi(particle));
+    imgfft= fftshift(fft2(img_padded));
+    [img_sub(:,:,particle), ~]= applyMask(imgfft,rotatedMask,'StdNormRand', alignInfo.pixA);
+    %imshowpair(img_padded,img_sub(:,:,particle),'montage')
+end
+WriteMRC(img_sub(directional_padsize(1):directional_padsize(1)+imsize(1),...
+                 directional_padsize(2):directional_padsize(2)+imsize(2), :), ...
+         alignInfo.pixA(1),'stack_subtracted.mrc',2,nParticles);
+%WriteMRC(img_sub,alignInfo.pixA(1),'stack_subtracted.mrc',2,nParticles);
 end
 
 function showTemplateDiagnositcs(img, imgfft, img_sub, imgfft_sub,padsize,Threshold)

@@ -1,4 +1,6 @@
 clear variables;
+addpath('../EMIODist2');
+
 %mrcpath_prefix = "/data/reza/csparc2/P12/";
 %starfilepath = "/ssd/20200410_csparc_sa_aligned.star";
 mrcpath_prefix = "";
