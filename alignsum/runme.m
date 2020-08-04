@@ -4,7 +4,7 @@ addpath('../EMIODist2');
 %mrcpath_prefix = "/data/reza/csparc2/P12/";
 %starfilepath = "/ssd/20200410_csparc_sa_aligned.star";
 mrcpath_prefix = "";
-starfilepath = "testset_j47.star";
+starfilepath = "./aligned_ctf.star";
 tic;
 %[sumaligned, sumorigin] = alignsumstar(starfilepath,mrcpath_prefix,1);
 [sumaligned, sumorigin] = alignsumstar_par(starfilepath,mrcpath_prefix,1); %parallel

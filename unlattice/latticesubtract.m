@@ -4,10 +4,10 @@ clear variables;
 %restoredefaultpath; matlabrc; close all;
 
 padsize=            200;    % pad size in pixels to add to the largest dimension of image, padded image is square shaped
-Low_res_lim_Ang=    20;     % lowest resolution to mask
-Hi_res_lim_Ang=     5;      % highest resolution to mask
+Low_res_lim_Ang=    30;     % lowest resolution to mask
+Hi_res_lim_Ang=     3;      % highest resolution to mask
 Pixel_Ang=          1.13;   % pixel size in anstrums
-Threshold=          6.0;    % PICK FROM LOG OF RAW POWER SPECTRUM
+Threshold=          5;    % PICK FROM LOG OF RAW POWER SPECTRUM
 expand_diameter=      1;    % expansion diameter of mask in pixels; applies to filtered mask
 
 
@@ -25,9 +25,10 @@ logPS=log(abs(imgfft));
 %TODO: adaptive radial threshold value is needed
 
 [img_sub, imgfft_sub]= applyMask(imgfft,hotpixmsk,'StdNormRand', Pixel_Ang);
-%showTemplateDiagnositcs(template_img,imgfft, img_sub, imgfft_sub,padsize,Threshold); % display operation results on template
+showTemplateDiagnositcs(template_img,imgfft, img_sub, imgfft_sub,padsize,Threshold); % display operation results on template
+WriteMRC(img_sub,Pixel_Ang,'template_subtracted.mrc',2,1);
 
-starFilePath= 'aligned_ctf.star';
+starFilePath= 'raw_test.star';
 mrcPathPrefix = './';
 [particleIdx, stackPath, alignInfo]= getStackHandle(starFilePath, mrcPathPrefix);
 
@@ -44,15 +45,14 @@ for particle = 1:nParticles
     end
     img= double(stack(:,:,particleIdx(particle)));    
     img_padded= padarray(img,  directional_padsize);
-    rotatedMask= applyRotation(hotpixmsk, size(img_padded,1), size(img_padded,2),alignInfo.anglePsi(particle));
+    rotatedMask= applyRotation(hotpixmsk, size(img_padded,1), size(img_padded,2),-alignInfo.anglePsi(particle)); %rotate mask back to unaligned image
     imgfft= fftshift(fft2(img_padded));
     [img_sub(:,:,particle), ~]= applyMask(imgfft,rotatedMask,'StdNormRand', alignInfo.pixA);
-    %imshowpair(img_padded,img_sub(:,:,particle),'montage')
+%    imshowpair(abs(imgfft),abs(subfft),'montage')
 end
-WriteMRC(img_sub(directional_padsize(1):directional_padsize(1)+imsize(1),...
-                 directional_padsize(2):directional_padsize(2)+imsize(2), :), ...
-         alignInfo.pixA(1),'stack_subtracted.mrc',2,nParticles);
-%WriteMRC(img_sub,alignInfo.pixA(1),'stack_subtracted.mrc',2,nParticles);
+WriteMRC(img_sub(directional_padsize(1)+1:directional_padsize(1)+imsize(1),...
+                 directional_padsize(2)+1:directional_padsize(2)+imsize(2), :), ...
+         alignInfo.pixA(1),'sa_sub.mrcs',2,nParticles);
 end
 
 function showTemplateDiagnositcs(img, imgfft, img_sub, imgfft_sub,padsize,Threshold)
@@ -73,6 +73,7 @@ function showTemplateDiagnositcs(img, imgfft, img_sub, imgfft_sub,padsize,Thresh
     plot(ax_,mean(abs(imgfft)),'DisplayName','before subtraction'); 
     plot(ax_,mean(abs(imgfft_sub)),'DisplayName','after subtraction');
     hold off; 
+    drawnow;
 
     WriteMRC(img_sub,1,'subtracted_template.mrc');
 end  
