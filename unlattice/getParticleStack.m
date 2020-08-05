@@ -1,8 +1,21 @@
-function [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix)
+function [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, readMethod)
 % 
 % particleIdx@mrcstack_fullpath
 
-[blockNames, blocks, ~] = ReadStarFile(starFilePath);
+if nargin < 2
+    mrcPathPrefix='./'
+    readMethod='parallel'
+elseif nargin == 2
+    readMethod='parallel'
+end
+switch readMethod
+    case 'parallel'
+        [blockNames, blocks, ~] = ReadStarFile_par(starFilePath);
+    case 'serial'
+        [blockNames, blocks, ~] = ReadStarFile(starFilePath);
+    otherwise
+        return
+end
 particles = ismember(blockNames,'data_particles');
 if ~any(particles)
     fprintf("data_particles was not found in the STAR file.");
