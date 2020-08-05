@@ -10,7 +10,7 @@ maskSettings.hiResLimAng=  3;
 maskSettings.ringRadius=   [10,7.0,5.8,4.78,3.8,3.4];
 maskSettings.threshold=    [6.0,5.0,4.0,3.6,3.4,3.1];
 
-starFilePath= 'test_big_stack.star';
+starFilePath= 'p1j44_particles.star';
 mrcPathPrefix = './';
 [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix);
 
