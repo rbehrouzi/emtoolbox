@@ -3,10 +3,10 @@ function [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcP
 % particleIdx@mrcstack_fullpath
 
 if nargin < 2
-    mrcPathPrefix='./'
-    readMethod='parallel'
+    mrcPathPrefix='./';
+    readMethod='parallel';
 elseif nargin == 2
-    readMethod='parallel'
+    readMethod='parallel';
 end
 switch readMethod
     case 'parallel'
