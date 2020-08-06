@@ -33,29 +33,29 @@ commentMarkers={'#'};
 ok=exist(name,'file');
 if ~ok
     error(['STAR file not found: ' name]);
-end;
+end
 fi=fopen(name);
 
 nLines=0;
 C=cell(1,1);
 
 % Load the whole file into the cell array C, handling comments
-disp('loading...');
+disp('loading file to memory...');
 while ~feof(fi)
     line=fgetl(fi);
     p=strfind(line,commentMarkers);
     hasComment = numel(p)>0;
     if hasComment
         line(p(1):end)=[];
-    end;
+    end
     % Lines that only contain comments are treated as blank lines.
     nLines=nLines+1;  % Count this line
     if numel(line)<1
         C{nLines}={{}}; % Count as blank
     else
         C{nLines}=textscan(line,'%s');
-    end;
-end;
+    end
+end
 fclose(fi);
 %% ------------------
 % C is a cell array {1,1} (a single '%s' is picked up) containing a cell
@@ -64,7 +64,7 @@ fclose(fi);
 nBlocks=0;
 P=1;  % line pointer
 
-disp('scanning...');
+disp('processing contents...');
 while P<=numel(C) % loop through all the entries
     
     % skip blank lines
@@ -72,8 +72,8 @@ while P<=numel(C) % loop through all the entries
         P=P+1;
         if P>numel(C)
             return  % exit the function.
-        end;
-    end;
+        end
+    end
     
     % Get the block name
     % It starts with 'data_'
@@ -82,16 +82,16 @@ while P<=numel(C) % loop through all the entries
         blockNames{nBlocks,1}=C{P}{1}{1};  % whole string data_xxx
     else
         error(['''data_'' expected at line ' num2str(nLines)])
-    end;
+    end
     P=P+1;
     
     % skip blank lines
     while numel(C{P})<1 || numel(C{P}{1})<1
         P=P+1;
-    end;
+    end
     if P>numel(C)  % reached the end of the file
         error(['End of file. Expected data at line ' num2str(nLines)]);
-    end;
+    end
     
     loopMode=strcmpi(C{P}{1}{1},'loop_');    
     if loopMode
@@ -99,11 +99,11 @@ while P<=numel(C) % loop through all the entries
         % skip blank lines
         while numel(C{P})<1 || numel(C{P}{1})<1
             P=P+1;
-        end;
+        end
         if P>numel(C)
             error(['End of file.  Expected field name at line ' num2str(nLines)]);
-        end;
-    end;
+        end
+    end
     
     %  pick up fieldnames
     nFields=0;
@@ -117,10 +117,10 @@ while P<=numel(C) % loop through all the entries
                 fieldVals{1,nFields}=C{P}{1}{2};
             else
                 fieldVals{1,nFields}='';
-            end;
-        end;
+            end
+        end
         P=P+1;
-    end;
+    end
     %%
     nRows=1;
     if loopMode  % Now the values follow immediately after the fieldnames
@@ -130,8 +130,8 @@ while P<=numel(C) % loop through all the entries
             nRows=nRows+1;
             fieldVals(nRows,:)=C{P}{1}';
             P=P+1;
-        end;
-    end;
+        end
+    end
     
 %     Convert fieldVals to numeric when possible
     q=struct;
@@ -145,12 +145,12 @@ while P<=numel(C) % loop through all the entries
                 q.(fn)=fieldVals{1,i}; % field is a string
             else
                 q.(fn)=fieldVals(:,i); % field is a cell array
-            end;
-        end;
-    end;
+            end
+        end
+    end
    
     blockData{nBlocks,1}=q;
-end;
+end
 disp('done.');
 return;
 

@@ -38,7 +38,7 @@ nLines=0;
 C=cell(1,1);
 
 % Load the whole file into the cell array C, handling comments
-disp('loading STAR file...');
+disp('loading STAR file into RAM...');
 while ~feof(fi)
     line=fgetl(fi);
     p=strfind(line,commentMarkers);
@@ -61,7 +61,7 @@ fclose(fi);
 
 nBlocks=0;
 P=1;  % line pointer
-disp('Scanning STAR file data...');
+disp('Processing contents...');
 parallelread = false;   %read normally, except when reaching data_particles
 
 while P<=numel(C) % loop through all the entries
