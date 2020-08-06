@@ -10,7 +10,7 @@ function classSubtract()
     maskSettings.resolutionAngst= [10,7.0,5.8,4.78,3.8,3.4];
     maskSettings.threshold=       [6.0,5.0,4.0,3.6,3.4,3.1];
 
-    starFilePath= 'p1j44_singlestack.star';
+    starFilePath= 'p1j55_particles.star';
     mrcPathPrefix = './';
     [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'parallel');
 
@@ -33,7 +33,6 @@ function classSubtract()
 
     openStackName = ''; 
     nParticles=length(pStackIdx);
-    class2D= pMetaData.classNr;
     for particle = 1:nParticles
         if ~strcmpi(pStackPath{particle},openStackName)
             if exist('img_sub', 'var')
@@ -41,7 +40,6 @@ function classSubtract()
                     maskSettings.padSize+1:maskSettings.padSize+imsize(2), :), pixA, ...
                     fullfile(savePath,[lastStackName,'_selfsub',lastStackExt]),2,size(img_sub,3));
             end
-    %        fprintf(logger,"Now reading file %d. Total particles read so far is %d.\r",fileno, particle);
             openStackName=pStackPath{particle};
             [stack, s]=ReadMRC(pStackPath{particle});
             img_sub = repmat(padToSquare(zeros(imsize),  maskSettings.padSize),1,1,s.nz);
@@ -49,7 +47,7 @@ function classSubtract()
         end
         img= double(stack(:,:,pStackIdx(particle)));    
         imgfft= fftshift(fft2(padToSquare(img,  maskSettings.padSize)));
-        rotatedMask= rotateAroundCenter(latticeMask(:,:,class2D(particle)), -pMetaData.anglePsi(particle)); %rotate mask back to unaligned image
+        rotatedMask= rotateAroundCenter(latticeMask(:,:,pMetaData.classNr(particle)), -pMetaData.anglePsi(particle)); %rotate mask back to unaligned image
         [img_sub(:,:,particle), ~]= applyMask(imgfft,rotatedMask, pMetaData.pixA, 'StdNormRand');
     end
 end
