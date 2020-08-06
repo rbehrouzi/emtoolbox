@@ -42,7 +42,7 @@ function classSubtract()
             end
             openStackName=pStackPath{particle};
             [stack, s]=ReadMRC(pStackPath{particle});
-            img_sub = repmat(padToSquare(zeros(imsize),  maskSettings.padSize),1,1,s.nz);
+            img_sub = repmat(padToSquare(zeros(imsize,'single'),  maskSettings.padSize),1,1,s.nz);
             [~,lastStackName,lastStackExt]= fileparts(openStackName);
         end
         img= double(stack(:,:,pStackIdx(particle)));    
