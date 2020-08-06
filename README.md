@@ -1,2 +1,5 @@
 # alignsum
-Further development on BG Han's scripts for SA lattice subtraction
+	real space rotation and averaging of stacks
+
+# unlattice
+    periodic background subtraction
