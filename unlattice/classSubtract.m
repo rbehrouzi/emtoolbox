@@ -11,14 +11,14 @@ function classSubtract()
     maskSettings.threshold=       [6.0,5.0,4.0,3.6,3.4,3.1];
 
     starFilePath= 'p1j55_particles.star';
-    mrcPathPrefix = './';
+    mrcPathPrefix = '/mnt/d/csparc/P1';
     [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'parallel');
 
     % read all 2D class images
     % and make masks for the ones referenced in particles data
     % classNr indices remain consistent with latticeMask 
     classNr= unique(pMetaData.classNr);
-    classesMrcsPath=  '/data/reza/csparc/P1/J44/cryosparc_P1_J44_020_class_averages.mrc';
+    classesMrcsPath=  '/mnt/d/csparc/P1/J44/cryosparc_P1_J44_020_class_averages.mrc';
     classStack= double(ReadMRC(classesMrcsPath)); 
     maskTemplate= padToSquare(false(pMetaData.imageSize),maskSettings.padSize);
     latticeMask= repmat(maskTemplate,1,1,size(classStack,3)); 
@@ -33,9 +33,15 @@ function classSubtract()
 
     openStackName = ''; 
     nParticles=length(pStackIdx);
+    newStackIdx = zeros(1,nParticles,'uint32');
     for particle = 1:nParticles
         if ~strcmpi(pStackPath{particle},openStackName)
             if exist('img_sub', 'var')
+                if slice-1 < s.nz
+                    % some particles in the mrc stack were not referenced 
+                    % in the star file. Remove empty end of img_sub before saving
+                    img_sub(:,:,slice:end)=[];
+                end
                 WriteMRC(img_sub(maskSettings.padSize+1:maskSettings.padSize+imsize(1),...
                     maskSettings.padSize+1:maskSettings.padSize+imsize(2), :), pixA, ...
                     fullfile(savePath,[lastStackName,'_selfsub',lastStackExt]),2,size(img_sub,3));
@@ -43,12 +49,16 @@ function classSubtract()
             openStackName=pStackPath{particle};
             [stack, s]=ReadMRC(pStackPath{particle});
             img_sub = repmat(padToSquare(zeros(imsize,'single'),  maskSettings.padSize),1,1,s.nz);
+            slice=1;
             [~,lastStackName,lastStackExt]= fileparts(openStackName);
         end
         img= double(stack(:,:,pStackIdx(particle)));    
         imgfft= fftshift(fft2(padToSquare(img,  maskSettings.padSize)));
         rotatedMask= rotateAroundCenter(latticeMask(:,:,pMetaData.classNr(particle)), -pMetaData.anglePsi(particle)); %rotate mask back to unaligned image
-        [img_sub(:,:,particle), ~]= applyMask(imgfft,rotatedMask, pMetaData.pixA, 'StdNormRand');
+        [img_sub(:,:,slice), ~]= applyMask(imgfft,rotatedMask, pMetaData.pixA, 'StdNormRand');
+        newStackIdx(particle)=slice;
+        slice=slice+1;
+
     end
 end
 
