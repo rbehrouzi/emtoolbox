@@ -8,16 +8,17 @@ restoredefaultpath;
 clear variables;
 addpath('../EMIODist2','../EMIO_parallel','./utils'); 
 
-maskParams.padSize=     64;    % pad size before and after images
-maskParams.loLimAngst=  40;
+maskParams.padSize=     2;    % 2x padding in fft
+maskParams.loLimAngst=  80;
 maskParams.hiLimAngst=  3;
 maskParams.smoothPix=   5;
 %maskParams.sigma=       1.42;
-maskSettings.resolutionAngst= [10,7.0,5.8,4.78,3.8,3.4];
-maskSettings.threshold=       [6.0,5.0,4.0,3.6,3.4,3.1];
+maskParams.resolutionAngst= [15.00 10.00  8.00  5.00];
+maskParams.threshold=       [7.20 5.50 4.50 3.50];
 
 starFilePath=   'p1j55_particles.star';
 mrcPathPrefix = '/mnt/d/csparc/P1';
+classesMrcsPath=  '/mnt/d/csparc/P1/J44/cryosparc_P1_J44_020_class_averages.mrc';
 savePath=       '/mnt/d/20200410_cmplx3_SA/particles';
 saveFSuff=      '_classsub_p1j44'; %filename suffix
 
@@ -27,17 +28,15 @@ saveFSuff=      '_classsub_p1j44'; %filename suffix
 % and make masks for the ones referenced in particles data
 % classNr indices remain consistent with latticeMask 
 classNr= unique(pMetaData.classNr);
-classesMrcsPath=  '/mnt/d/csparc/P1/J44/cryosparc_P1_J44_020_class_averages.mrc';
 classStack= ReadMRC(classesMrcsPath); 
-maskTemplate= padToSquare(false(pMetaData.imageSize),maskSettings.padSize);
+maskTemplate= padToSquare(false(size(classStack(:,:,1))),maskParams.padSize);
 latticeMask= repmat(maskTemplate,1,1,size(classStack,3)); 
-
-for cls= classNr
-    imgfft= fftshift(fft2(padToSquare(classStack(:,:,cls),maskSettings.padSize)));
+for cls= classNr(:)
+    imgfft= fftshift(fft2(padToSquare(classStack(:,:,cls),maskParams.padSize)));
     logPS=log(abs(imgfft));
-    latticeMask(:,:,cls)= maskAboveThreshold(logPS,maskSettings,pMetaData.pixA);
+    latticeMask(:,:,cls)= createMask(logPS,maskParams,pMetaData.pixA);
     [class_sub, classfft_sub]= applyMask(imgfft,latticeMask(:,:,cls), pMetaData.pixA, 'StdNormRand');
-    showTemplateDiagnostics(classStack(:,:,cls),imgfft, class_sub, classfft_sub,maskSettings.padSize); % display operation results on template
+    showTemplateDiagnostics(classStack(:,:,cls),imgfft, class_sub, classfft_sub,maskParams.padSize); % display operation results on template
 end
 
 nParticles=length(pStackIdx);
@@ -64,7 +63,7 @@ for particle = 1:nParticles
                          maskParams.padSize),1,1,stackMetaData.nz);
     end
     img= double(stack(:,:,pStackIdx(particle)));    
-    imgfft= fftshift(fft2(padToSquare(img,  maskSettings.padSize)));
+    imgfft= fftshift(fft2(padToSquare(img,  maskParams.padSize)));
     rotatedMask= rotateAroundCenter(latticeMask(:,:,pMetaData.classNr(particle)), -pMetaData.anglePsi(particle)); %rotate mask back to unaligned image
     [img_sub(:,:,slice), ~]= applyMask(imgfft,rotatedMask, pMetaData.pixA, 'StdNormRand');
     newStackIdx(particle)=slice;

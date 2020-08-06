@@ -4,7 +4,7 @@ maskParams.padSize=      64;    % pad size to add to each side of image
 maskParams.sigma= 1.0;
 maskParams.smoothPix= 5;
 
-%load('p1j55_particles_ctf.mat');
+load('p1j55_particles_ctf.mat');
 %starFilePath= 'p1j55_particles_ctf.star';
 %mrcPathPrefix = './';
 %[pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'parallel');

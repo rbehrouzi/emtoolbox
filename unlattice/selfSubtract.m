@@ -17,12 +17,12 @@ maskParams.sigma=       1.0;
 %maskSettings.threshold=       [6.0,5.0,4.0,3.6,3.4,3.1];
 
 savePath=               '/mnt/d/20200410_cmplx3_SA/particles';
-starFilePath=           'p1j55_particles_ctf.star';
+starFilePath=           'p1j55_particles.star';
 mrcPathPrefix =         './';
 saveFSuff=          ['_selfsub_sigma-',...  
                          strrep(num2str(maskParams.sigma),'.','p')]; %filename suffix
 
-[pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'serial');
+[pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'parallel');
 nParticles=length(pStackIdx);
 pixA= pMetaData.pixA; 
 imsize= pMetaData.imageSize;

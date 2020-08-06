@@ -1,8 +1,10 @@
 function paddedArray= padToSquare(inArray,padSize)
-% Pad inArray with at least padsize elements on before and after each
+% Pad inArray with by padSizex factor (calculated on largest dim)
 % dimension. Adjust padding in each dimension so that paddedArray has the
 % same size in all dimensions
     imsize= size(inArray);
-    directional_padsize= padSize+max(imsize)-imsize;
-    paddedArray= padarray(inArray,  directional_padsize);
+    longestDim= max(imsize);
+    padding= floor(padSize.*longestDim - longestDim)./2.0; 
+    dimensionalPadding= padding+max(imsize)-imsize;
+    paddedArray= padarray(inArray,  dimensionalPadding);
 end

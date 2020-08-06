@@ -1,4 +1,4 @@
-function mask= createMask(img,maskParams, pixAngst, method)
+function mask= createMask(img,maskParams, pixA, method)
 %CREATEMASK(IMG, MASKPARAMS, PIXANGST, METHOD) 
 %
 % masked values are 1, other regions 0
@@ -8,6 +8,7 @@ function mask= createMask(img,maskParams, pixAngst, method)
         method= 'threshold';
     end
     imsize = size(img);
+    pixAngst= pixA./maskParams.padSize;
     
     switch method
         case 'threshold'
