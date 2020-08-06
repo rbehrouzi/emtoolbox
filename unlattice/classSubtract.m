@@ -6,7 +6,7 @@ function classSubtract()
 %matlabrc; close all;
 restoredefaultpath; 
 clear variables;
-addpath('../EMIODist2','../EMIO_parallel'); % IO for star and mrc files
+addpath('../EMIODist2','../EMIO_parallel','./utils'); 
 
 maskParams.padSize=     64;    % pad size before and after images
 maskParams.loLimAngst=  40;
@@ -16,11 +16,10 @@ maskParams.smoothPix=   5;
 maskSettings.resolutionAngst= [10,7.0,5.8,4.78,3.8,3.4];
 maskSettings.threshold=       [6.0,5.0,4.0,3.6,3.4,3.1];
 
-starFilePath= 'p1j55_particles.star';
+starFilePath=   'p1j55_particles.star';
 mrcPathPrefix = '/mnt/d/csparc/P1';
-savePath=               '/mnt/d/20200410_cmplx3_SA/particles';
-saveFSuff=          ['_selfsub_sigma-',...  
-                         strrep(num2str(maskParams.sigma),'.','p')]; %filename suffix
+savePath=       '/mnt/d/20200410_cmplx3_SA/particles';
+saveFSuff=      '_classsub_p1j44'; %filename suffix
 
 [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'parallel');
 
@@ -32,11 +31,11 @@ classesMrcsPath=  '/mnt/d/csparc/P1/J44/cryosparc_P1_J44_020_class_averages.mrc'
 classStack= ReadMRC(classesMrcsPath); 
 maskTemplate= padToSquare(false(pMetaData.imageSize),maskSettings.padSize);
 latticeMask= repmat(maskTemplate,1,1,size(classStack,3)); 
+
 for cls= classNr
     imgfft= fftshift(fft2(padToSquare(classStack(:,:,cls),maskSettings.padSize)));
     logPS=log(abs(imgfft));
-    rawmask = maskAboveThreshold(logPS,maskSettings,pMetaData.pixA);
-    latticeMask(:,:,cls)= filter2(circle,rawmask); %smoothing 
+    latticeMask(:,:,cls)= maskAboveThreshold(logPS,maskSettings,pMetaData.pixA);
     [class_sub, classfft_sub]= applyMask(imgfft,latticeMask(:,:,cls), pMetaData.pixA, 'StdNormRand');
     showTemplateDiagnostics(classStack(:,:,cls),imgfft, class_sub, classfft_sub,maskSettings.padSize); % display operation results on template
 end

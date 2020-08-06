@@ -12,13 +12,13 @@ maskParams.padSize=     64;    % pad size before and after images
 maskParams.loLimAngst=  40;
 maskParams.hiLimAngst=  3;
 maskParams.smoothPix=   5;
-maskParams.sigma=       1.42;
+maskParams.sigma=       1.0;
 %maskSettings.resolutionAngst= [10,7.0,5.8,4.78,3.8,3.4];
 %maskSettings.threshold=       [6.0,5.0,4.0,3.6,3.4,3.1];
 
 savePath=               '/mnt/d/20200410_cmplx3_SA/particles';
-starFilePath=           'p1left.star';
-mrcPathPrefix =         '/mnt/d/csparc/P1';
+starFilePath=           'p1j55_particles_ctf.star';
+mrcPathPrefix =         './';
 saveFSuff=          ['_selfsub_sigma-',...  
                          strrep(num2str(maskParams.sigma),'.','p')]; %filename suffix
 
