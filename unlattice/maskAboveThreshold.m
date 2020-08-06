@@ -25,7 +25,7 @@ msk =  aboveThrMsk & ~centricDisk(imsize,inRingPix) ...
 %expand mask to make msk_filtered
 expandradius   = fix((maskParams.expandPix)./2)+1;
 circle = centricDisk(maskParams.expandPix,expandradius);
-msk_filtered  = filter2(circle,msk); %equivalent to conv2(~mask,rot90(circle,2))
+msk_filtered  = filter2(circle,msk); %smoothing 
 
 end
 

@@ -3,8 +3,8 @@ addpath('../EMIODist2','../EMIO_parallel'); % IO of star and mrcs files
 clear variables;
 %restoredefaultpath; matlabrc; close all;
 
-maskSettings.padSize=      200;    % pad size in pixels to add to the largest dimension of image, padded image is square shaped
-maskSettings.expandPix=    1;
+maskSettings.padSize=      64;    % pad size before and after images
+maskSettings.expandPix=    5;     % square size containing circle to filter (smooth) mask
 maskSettings.lowResLimAng= 40;
 maskSettings.hiResLimAng=  3;
 maskSettings.ringRadius=   [10,7.0,5.8,4.78,3.8,3.4];
@@ -20,12 +20,12 @@ mrcPathPrefix = './';
 classNr= unique(pMetaData.classNr);
 classesMrcsPath=  '/data/reza/csparc/P1/J44/cryosparc_P1_J44_020_class_averages.mrc';
 classStack= double(ReadMRC(classesMrcsPath)); 
-maskTemplate= padToSquare(false(pMetaData.nx, pMetaData.ny),maskSettings.padSize);
+maskTemplate= padToSquare(false(pMetaData.imageSize),maskSettings.padSize);
 latticeMask= repmat(maskTemplate,1,1,size(classStack,3)); 
 for cls= classNr
     imgfft= fftshift(fft2(padToSquare(classStack(:,:,cls),maskSettings.padSize)));
     logPS=log(abs(imgfft));
-    [latticeMask(:,:,cls), ~] = maskAboveThreshold(logPS,maskSettings,pMetaData.pixA);
+    [~, latticeMask(:,:,cls)] = maskAboveThreshold(logPS,maskSettings,pMetaData.pixA);
     [class_sub, classfft_sub]= applyMask(imgfft,latticeMask(:,:,cls), pMetaData.pixA, 'StdNormRand');
     showTemplateDiagnostics(classStack(:,:,cls),imgfft, class_sub, classfft_sub,maskSettings.padSize); % display operation results on template
 end

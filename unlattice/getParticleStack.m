@@ -46,27 +46,27 @@ if any(opticsTblIdx)
     opticsData = blocks{opticsTblIdx};
     pMetaData.pixA= opticsData.rlnImagePixelSize;
     if isfield(opticsData,'rlnImageSize')
-        pMetaData.nx(:)= opticsData.rlnImageSize;
-        pMetaData.ny(:)= opticsData.rlnImageSize;
+        pMetaData.imageSize(1)= opticsData.rlnImageSize;
+        pMetaData.imageSize(2)= opticsData.rlnImageSize;
     else
         [~, hdr]= ReadMRC(pStackPath{1},1,0);
-        pMetaData.nx(:)= hdr.nx;
-        pMetaData.ny(:)= hdr.ny;
+        pMetaData.imageSize(1)= hdr.nx;
+        pMetaData.imageSize(2)= hdr.ny;
     end        
 
 elseif isfield(pMetaData,'rlnImagePixelSize')
 % otherwise, check data_particles for pixelSize and first stack for size
     pMetaData.pixA= particleData.rlnImagePixelSize;
     [~, hdr]= ReadMRC(pStackPath{1},1,0);    
-    pMetaData.nx(:)= hdr.nx;
-    pMetaData.ny(:)= hdr.ny;
+    pMetaData.imageSize(1)= hdr.nx;
+    pMetaData.imageSize(2)= hdr.ny;
 
 else
 % otherwise, read mrc header of the first particle stack for everything
     fprintf("Pixel size was read from %s file header",pStackPath{1});
     [~, hdr]= ReadMRC(pStackPath{1},1,0);
     pMetaData.pixA=  hdr.pixA;
-    pMetaData.nx(:)= hdr.nx;
-    pMetaData.ny(:)= hdr.ny;
+    pMetaData.imageSize(1)= hdr.nx;
+    pMetaData.imageSize(2)= hdr.ny;
 end
 end

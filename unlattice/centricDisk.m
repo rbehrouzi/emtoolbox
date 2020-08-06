@@ -1,11 +1,4 @@
-function [circularMask] = centricDisk(mskSize,radius) function [outputArg1,outputArg2] = centricDisk(inputArg1,inputArg2)
-%CENTRICDISK Summary of this function goes here
-%   Detailed explanation goes here
-outputArg1 = inputArg1;
-outputArg2 = inputArg2;
-end
-
-
+function [circularMask] = centricDisk(mskSize,radius) 
 %MASK = CIRCULARMASK (BOXSIZE, RADIUS) Central cicular mask in box
 %   msk is 2D logical array of the size defined by boxsize
 %   array elements inside a central circle of radius radius are 1,

@@ -1,6 +1,6 @@
 addpath('../../EMIODist2','../../EMIO_parallel','../../unlattice/'); % IO of star and mrcs files
 
-maskSettings.padSize=      128;    % pad size in pixels to add to the largest dimension of image, padded image is square shaped
+maskSettings.padSize=      64;    % pad size in pixels to add to the largest dimension of image, padded image is square shaped
 maskSettings.expandPix=    1;
 maskSettings.lowResLimAng= 40;
 maskSettings.hiResLimAng=  3;
