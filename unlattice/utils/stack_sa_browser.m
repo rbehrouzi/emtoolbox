@@ -1,6 +1,6 @@
 addpath('../EMIODist2','../EMIO_parallel'); % IO of star and mrcs files
 
-maskParams.padSize=      64;    % pad size to add to each side of image
+maskParams.padSize=      2;    % pad size to add to each side of image
 maskParams.sigma= 1.0;
 maskParams.smoothPix= 5;
 

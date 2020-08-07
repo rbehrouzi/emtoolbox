@@ -23,7 +23,7 @@ if ~any(particles)
 else
     particleData = blocks{particles};
     nparticles = size(particleData.rlnImageName,1);
-    fprintf("found %d particles.\n", nparticles);
+    fprintf("Found particle information for %d particles.\n", nparticles);
 end
 
 % compile list of mrc files and read header of the first 

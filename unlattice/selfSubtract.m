@@ -8,8 +8,8 @@ restoredefaultpath;
 clear variables;
 addpath('../EMIODist2','../EMIO_parallel'); % IO for star and mrc files
 
-maskParams.padSize=     64;    % pad size before and after images
-maskParams.loLimAngst=  40;
+maskParams.padSize=     2;    % pad size before and after images
+maskParams.loLimAngst=  80;
 maskParams.hiLimAngst=  3;
 maskParams.smoothPix=   5;
 maskParams.sigma=       1.0;
@@ -23,10 +23,10 @@ saveFSuff=          ['_selfsub_sigma-',...
                          strrep(num2str(maskParams.sigma),'.','p')]; %filename suffix
 
 [pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'parallel');
+save(['particles',saveFSuff], 'pStackIdx', 'pStackPath', 'pMetaData');
+
 nParticles=length(pStackIdx);
-pixA= pMetaData.pixA; 
-imsize= pMetaData.imageSize;
-padSize=maskParams.padSize;
+imSize= pMetaData.imageSize;
 newStackIdx = zeros(1,nParticles,'uint32');
 openStackName='';
 slice=1; 
@@ -34,22 +34,21 @@ for particle = 1:nParticles
     if ~strcmpi(pStackPath{particle},openStackName)
         if particle>1
             % write out previous img_sub whenever a new stack is to be opened
-            WriteMRC( img_sub(padSize+1:padSize+imsize(1),...
-                              padSize+1:padSize+imsize(2), 1:slice-1),...
-                pixA, fullfile(savePath,[saveFName,saveFSuff,saveFExt]),...
-                2);
+            fn= fullfile(savePath,[saveFName,saveFSuff,saveFExt]);
+            writeUnpadMRC(img_sub(:,:,1:slice-1), imSize, ...
+                          pMetaData.pixA, fn, 2);
         end
         slice=1;
         openStackName=pStackPath{particle};
         [~,saveFName,saveFExt]= fileparts(openStackName);
         [stack, stackMetaData]=ReadMRC(pStackPath{particle});
-        img_sub = repmat(padToSquare(zeros(imsize,'single'), ...
+        img_sub = repmat(padToSquare(zeros(imSize,'single'), ...
                          maskParams.padSize),1,1,stackMetaData.nz);
     end
     img= double(stack(:,:,pStackIdx(particle)));    
     imgfft= fftshift(fft2(padToSquare(img,  maskParams.padSize)));
-    sa_mask=createMask(log(abs(imgfft)),maskParams,pixA,'sigma');
-    [img_sub(:,:,slice), ~]= applyMask(imgfft,sa_mask, pixA, 'StdNormRand');
+    sa_mask=createMask(log(abs(imgfft)),maskParams,pMetaData.pixA,'sigma');
+    [img_sub(:,:,slice), ~]= applyMask(imgfft,sa_mask, pMetaData.pixA, 'StdNormRand');
     newStackIdx(particle)=slice;
     slice=slice+1;
 
@@ -58,10 +57,9 @@ for particle = 1:nParticles
 end
 
 % the very last stack
-WriteMRC( img_sub(padSize+1:padSize+imsize(1),...
-                  padSize+1:padSize+imsize(2), 1:slice-1),...
-    pixA, fullfile(savePath,[saveFName,saveFSuff,saveFExt]),...
-    2);
+% the very last stack
+fn= fullfile(savePath,[saveFName,saveFSuff,saveFExt]);
+writeUnpadMRC(img_sub(:,:,slice-1), imSize, pMetaData.pixA, fn, 2);
 
 end
 
