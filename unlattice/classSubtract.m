@@ -72,7 +72,7 @@ end
 
 % the very last stack
 fn= fullfile(savePath,[saveFName,saveFSuff,saveFExt]);
-writeUnpadMRC(img_sub(:,:,slice-1), imSize, pMetaData.pixA, fn, 2);
+writeUnpadMRC(img_sub(:,:,1:slice-1), imSize, pMetaData.pixA, fn, 2);
 
 end
 

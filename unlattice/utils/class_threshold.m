@@ -3,7 +3,7 @@ maskParams.padSize=     2;    % 2x padding
 maskParams.loLimAngst=  80;
 maskParams.hiLimAngst=  3;
 maskParams.smoothPix=   5;
-%maskParams.sigma=       1.42;
+maskParams.sigma=       1.42;
 maskParams.resolutionAngst= [15.00 10.00  8.00  5.00];
 maskParams.threshold=       [7.20 5.50 4.50 3.50];
 
