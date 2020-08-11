@@ -4,8 +4,8 @@ maskParams.loLimAngst=  80;
 maskParams.hiLimAngst=  3;
 maskParams.smoothPix=   5;
 maskParams.sigma=       1.42;
-maskParams.resolutionAngst= [15.00 10.00  8.00  5.00];
-maskParams.threshold=       [7.20 5.50 4.50 3.50];
+maskParams.resolutionAngst= [17.00 10.00  8.00  5.00];
+maskParams.threshold=       [6.20 5.50 4.70 3.80];
 
 classesMrcsPath=  '/mnt/d/csparc/P1/J44/cryosparc_P1_J44_020_class_averages.mrc';
 [classStack, metaData]= ReadMRC(classesMrcsPath); 

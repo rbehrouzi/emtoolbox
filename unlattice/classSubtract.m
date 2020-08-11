@@ -13,8 +13,8 @@ maskParams.loLimAngst=  80;
 maskParams.hiLimAngst=  3;
 maskParams.smoothPix=   5;
 %maskParams.sigma=       1.42;
-maskParams.resolutionAngst= [15.00 10.00  8.00  5.00];
-maskParams.threshold=       [7.20 5.50 4.50 3.50];
+maskParams.resolutionAngst= [17.00 10.00  8.00  5.00];
+maskParams.threshold=       [6.20 5.50 4.70 3.80];
 
 starFilePath=   'p1j55_particles.star';
 mrcPathPrefix = './';
@@ -38,7 +38,7 @@ for ii= 1:length(classNr)
     logPS=log(abs(imgfft));
     latticeMask(:,:,cls)= createMask(logPS,maskParams,pMetaData.pixA);
     [class_sub, classfft_sub]= applyMask(imgfft,latticeMask(:,:,cls), pMetaData.pixA, 'StdNormRand');
-    showTemplateDiagnostics(classStack(:,:,cls),imgfft, class_sub, classfft_sub,maskParams.padSize); % display operation results on template
+%    showTemplateDiagnostics(classStack(:,:,cls),imgfft, class_sub, classfft_sub,maskParams.padSize); % display operation results on template
 end
 save(['particles-masks',saveFSuff],'latticeMask', 'pStackIdx', 'pStackPath', 'pMetaData');
 
@@ -61,6 +61,7 @@ for particle = 1:nParticles
         [stack, stackMetaData]=ReadMRC(pStackPath{particle});
         img_sub = repmat(padToSquare(zeros(imSize,'single'), ...
                          maskParams.padSize),1,1,stackMetaData.nz);
+        %TODO: renormalize particle
     end
     img= double(stack(:,:,pStackIdx(particle)));    
     imgfft= fftshift(fft2(padToSquare(img,  maskParams.padSize)));

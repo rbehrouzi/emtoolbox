@@ -3,12 +3,12 @@ addpath('../EMIODist2','../EMIO_parallel'); % IO of star and mrcs files
 maskParams.padSize=     2;    % 2x padding in fft
 maskParams.loLimAngst=  80;
 maskParams.hiLimAngst=  3;
-maskParams.smoothPix=   5;
-maskParams.sigma= 1.4;
+maskParams.smoothPix=   3;
+maskParams.sigma= 1.3;
 maskParams.resolutionAngst= [15.00 10.00  8.00  5.00];
 maskParams.threshold=       [7.20 5.50 4.50 3.50];
 
-%load('p1j55_particles_ctf.mat');
+load('particles-masks_classsub_p1j44.mat');
 %starFilePath= 'p1j55_particles_ctf.star';
 %mrcPathPrefix = './';
 %[pStackIdx, pStackPath, pMetaData]= getParticleStack(starFilePath, mrcPathPrefix, 'parallel');
