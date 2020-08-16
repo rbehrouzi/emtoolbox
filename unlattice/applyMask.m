@@ -1,7 +1,10 @@
-function [newimg, newimgfft] = applyMask(imgfft,msk,mthd,pixAng)
+function [newimg, newimgfft] = applyMask(imgfft,msk,pixA,mthd)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
+    if nargin < 4
+        mthd='StdNormRand';
+    end
     imgfft_unmsk = (~msk) .* imgfft;
 
     switch mthd
@@ -17,7 +20,7 @@ function [newimg, newimgfft] = applyMask(imgfft,msk,mthd,pixAng)
             
             local_val = abs(imgfft_unmsk) + abs (msk .* normrnd(0,1,size(msk))); 
 
-            shiftsize =  floor(pixAng/116 * size(imgfft,1));   %half-unit cell for SA in pixels
+            shiftsize =  floor(pixA/116 * size(imgfft,1));   %half-unit cell for SA in pixels
             localavg = 0.25 *  circshift(local_val,[shiftsize  0]) + ...
                                         circshift(local_val,[-shiftsize 0]) + ... 
                                         circshift(local_val,[0    shiftsize]) + ... 
