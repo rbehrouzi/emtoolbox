@@ -4,7 +4,7 @@
 # unlattice
     periodic background subtraction
    
-#TifTools
+# TifTools
 usage: python tiftools.py -c <configfile>
 see tiftools.conf for all available settings and definitions
   
