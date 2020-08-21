@@ -1,5 +1,5 @@
 addpath("utils/","../EMIO_parallel/","../EMIODist2/");
-impathbase='/data/reza/datasets/20200410_cmplx3_SA/average/10Apr2020_';
+impathbase='/mnt/d/20200410_cmplx3_SA/average/10Apr2020_';
 imlowdef=ReadMRC([impathbase,'165-5.mrc']);
 img=permute(imlowdef,[2,1]);
 
