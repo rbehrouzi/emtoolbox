@@ -20,7 +20,7 @@ else
 end
 
 boxCenter = fix(maskSize./2)+1;
-[X,Y]= ndgrid(1:maskSize(1)- boxCenter(1),...
+[X,Y]= meshgrid(1:maskSize(1)- boxCenter(1),...
               1:maskSize(2)- boxCenter(2));
 R2= X.^2 + Y.^2;
 r2 =radius.^2;
