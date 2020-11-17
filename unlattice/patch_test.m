@@ -1,10 +1,11 @@
 addpath("utils/","../EMIO_parallel/","../EMIODist2/");
 impathbase='/data/reza/datasets/20200410_cmplx3_SA/average/10Apr2020_';
-imlowdef=ReadMRC([impathbase,'165-5.mrc']);
+imlowdef=ReadMRC([impathbase,'195-9.mrc']);
 img=permute(imlowdef,[2,1]);
 
+patchno=[4 6];
+
 imsize = size(img);
-patchno=[2 2];
 patchsizes=floor(imsize./patchno);
 patchxup=ones(1,patchno(1)+1);
 patchyleft=ones(1,patchno(2)+1);
