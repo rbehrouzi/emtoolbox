@@ -20,9 +20,10 @@ else
 end
 
 boxCenter = fix(maskSize./2)+1;
-[x,y]= ndgrid(1:maskSize(1), 1:maskSize(2));
-centricEllipticalMask = ( ((x - boxCenter(1))./radius(1)).^2 + ...
-                          ((y - boxCenter(2))./radius(2)).^2  ...
-                          <= 1.0 );
+[X,Y]= meshgrid(1:maskSize(1)- boxCenter(1),...
+              1:maskSize(2)- boxCenter(2));
+R2= X.^2 + Y.^2;
+r2 =radius.^2;
+centricEllipticalMask = ( R2./r2(1) + R2./r2(2) <= 1.0 );
 
 end
