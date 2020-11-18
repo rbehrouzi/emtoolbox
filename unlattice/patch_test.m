@@ -10,7 +10,7 @@ psmax = max(ps,[],'all');
 figure;imshow(psbkcor);set(gca,'CLim',[0 0.1*psmax]);title('background sub');
 
 imsize = size(img);
-patchno=[2 2];
+patchno=[3 4];
 patchsizes=floor(imsize./patchno);
 patchxup=ones(1,patchno(1)+1);
 patchyleft=ones(1,patchno(2)+1);
@@ -37,10 +37,9 @@ for ii=1:patchno(1)
         pspatch=log(abs(absimgpatchfft));
         [pspatchbkcor, ~]= subtractPsBkgd(pspatch,5,10, bkgd1DFit);
         ax_{plotidx}=nexttile;
-        imshow(pspatchbkcor); 
-        center = fix(size(pspatchbkcor)./2)+1;
-        pspmax = max(pspatchbkcor(center(1)+10:end,center(2)+10:end),[],'all');
-        set(ax_{plotidx},'CLim',[0, pspmax]);
+        imshow(pspatchbkcor);
+        pspmax = max(pspatch,[],'all');
+        set(ax_{plotidx},'CLim',[0, 0.1*pspmax]);
 
     end
 end
