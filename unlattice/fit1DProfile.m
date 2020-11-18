@@ -1,19 +1,19 @@
-function [bkgdFit, gof]= fit1DProfile(radii, radAvg)
-% [bkgdFit, gof]= fit1DProfile(radii, radAvg)
+function [bkgdFit, gof]= fit1DProfile(radii, radAvg, excludeInFit)
+% [bkgdFit, gof]= fit1DProfile(radii, radAvg [, excludeInFit])
 %
-
-%TODO: auto adjust according to iamge size and bin
-excludeInFit=10; 
+if nargin < 3
+    %TODO: auto adjust according to iamge size and bin
+    excludeInFit=3; 
+end 
 [xData, yData] = prepareCurveData( ...
                     radii(excludeInFit:end), radAvg(excludeInFit:end) );
 
-% fit 1D profile with exponential
-ft = fittype( 'c-a*(1-exp(-b*x))', 'independent', 'x', 'dependent', 'y' );
-opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
-opts.Display = 'Off';
-opts.Lower = [0 0 0];
-opts.StartPoint = [1 0.005 1];
-opts.Upper = [100 0.001 100];
+% fit 1D profile with a smooth spline
+ft = fittype( 'smoothingspline' );
+opts = fitoptions( 'Method', 'SmoothingSpline' );
+opts.Normalize = 'on';
+opts.SmoothingParam = 0.95;
+
 [bkgdFit, gof] = fit( xData, yData, ft, opts );
 
 %debug%
@@ -25,7 +25,7 @@ end
 function show1DFit(bkgdFit, xData, yData)
 figure( 'Name', 'bkgd fit' );
 h = plot( bkgdFit, xData, yData );
-legend( h, 'Radial average PS', 'exponential decay', 'Location', 'NorthEast', 'Interpreter', 'none' );
+legend( h, 'Radial average PS', 'smooth decay', 'Location', 'NorthEast', 'Interpreter', 'none' );
 % Label axes
 xlabel( 'radius (pix)', 'Interpreter', 'none' );
 ylabel( 'Intensity', 'Interpreter', 'none' );

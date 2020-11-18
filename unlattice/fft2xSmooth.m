@@ -6,9 +6,8 @@ function imgfft = fft2xSmooth(img,mode,startR, stopR)
 %   if mode='square' (default)
 %                    imgfft is square with the size max(size(img))
 %
-%   Note: if image is not square, 2x padding is calculated for the larger 
-%   dimension and adjusted for the smaller one to create square before fft2 
-%   calculation.
+%   Note: if image is not square, 2x padding is calculated based on the larger 
+%   dimension.
 
 if nargin < 2
     mode= 'square';
@@ -19,32 +18,34 @@ if nargin < 3
 end
 
 imsize= size(img);
-sqSize = 2 ^ nextpow2(2*max(imsize));
-pad= floor( (sqSize - imsize)./2 );
-imgpad= padArraySine(img, pad, startR, stopR);
+img = smoothEdgeImage(img,startR, stopR);
+imgpad = double(padToSquare(img,2)); 
 fftPad= fftshift(fft2(imgpad));
 
+szdif = floor((size(imgpad)-imsize)./2);
 switch mode
     case 'original'
-        imgfft = fftPad( pad(1)+1:pad(1)+imsize(1), ...
-                        pad(2)+1:pad(2)+imsize(2));
+        imgfft = fftPad( szdif(1)+1:szdif(1)+imsize(1), ...
+                        szdif(2)+1:szdif(2)+imsize(2));
     case 'square'
-        imgfft = fftPad( min(pad)+1:min(pad)+max(imsize), ...
-                        min(pad)+1:min(pad)+max(imsize));
+        imgfft = fftPad( min(szdif)+1:min(szdif)+max(imsize), ...
+                        min(szdif)+1:min(szdif)+max(imsize));
 end
 
 %debug
-figure;
-tiledlayout('flow');
-nexttile;
-imshow(imgpad);set(gca,'YDir','normal');
-set(gca,'CLimMode','auto');
-nexttile;
-imshow(log(abs(fftPad)));set(gca,'YDir','normal','CLim',[12,16]);
-axis on;set(gca,'CLimMode','auto');
-rectangle('Position',[pad(1)+1,pad(2)+1,imsize(1),imsize(2)],'edgecolor','r','linewidth',1)
-rectangle('Position',[min(pad)+1,min(pad)+1,max(imsize),max(imsize)],'edgecolor','b','linewidth',1)
-drawnow;
+% figure;
+% tiledlayout('flow');
+% nexttile;
+% imshow(img);set(gca,'YDir','normal');
+% title('smooth edge micrograph');
+% set(gca,'CLimMode','auto');
+% nexttile;
+% imshow(log(abs(fftPad)));set(gca,'YDir','normal','CLim',[12,16]);
+% title('Padded PS');
+% axis on;set(gca,'CLimMode','auto');
+% rectangle('Position',[szdif(1)+1,szdif(2)+1,imsize(1),imsize(2)],'edgecolor','r','linewidth',1)
+% rectangle('Position',[min(szdif)+1,min(szdif)+1,max(imsize),max(imsize)],'edgecolor','b','linewidth',1)
+% drawnow;
 %debug
 
 end

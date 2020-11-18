@@ -1,7 +1,13 @@
 addpath("utils/","../EMIO_parallel/","../EMIODist2/");
 impathbase='/data/reza/datasets/20200410_cmplx3_SA/average/10Apr2020_';
-imlowdef=ReadMRC([impathbase,'165-5.mrc']);
+imlowdef=ReadMRC([impathbase,'208-1.mrc']);
 img=permute(imlowdef,[2,1]);
+
+%calcualte background profile on whole micrograph and use it for patches
+ps=log(abs(fft2xSmooth(img,'original')));
+[psbkcor, bkgd1DFit] = subtractPsBkgd(ps, 10,10);
+psmax = max(ps,[],'all');
+figure;imshow(psbkcor);set(gca,'CLim',[0 0.1*psmax]);title('background sub');
 
 imsize = size(img);
 patchno=[2 2];
@@ -17,20 +23,6 @@ for jj=2:patchno(2)
     patchyleft(jj)=patchyleft(jj-1)+patchsizes(2);
 end
 patchyleft(end)=imsize(2);
-
-%calcualte background profile on whole micrograph and use it for patches
-ps=log(abs(fft2xpad(img)));
-center = fix(size(ps)./2)+1;
-cenpixtrim = 10;
-ps(~isfinite(ps))=0;
-psavg = mean2(ps(center(1)+cenpixtrim:end,center(2)+cenpixtrim:end));
-ps = ps - psavg;
-psmax = max(ps(center(1)+cenpixtrim:end,center(2)+cenpixtrim:end),[],'all');
-imshow(ps); set(gca,'CLim',[0 0.6*psmax]);
-drawnow;
-
-[psbkcor, bkgd1DFit] = subtractPsBkgd(ps, 10,10);
-
 nplots=patchno(1)*patchno(2);
 ax_ = cell(1,nplots);
 figure;
@@ -40,7 +32,7 @@ for ii=1:patchno(1)
         plotidx = (ii-1)*patchno(1) + jj;
         imgpatch=img(patchxup(ii)  :patchxup(ii+1)   ,...
                      patchyleft(jj):patchyleft(jj+1));
-        imgpatchfft= fft2xpad(imgpatch);
+        imgpatchfft= fft2xSmooth(imgpatch);
         absimgpatchfft=abs(imgpatchfft);
         pspatch=log(abs(absimgpatchfft));
         [pspatchbkcor, ~]= subtractPsBkgd(pspatch,5,10, bkgd1DFit);

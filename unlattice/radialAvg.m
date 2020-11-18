@@ -1,23 +1,22 @@
-function profile = radialAvg(img, radii, smooth, cenx, ceny)
-% profile = radialAvg(img, radii [, smooth=false, cenx, ceny ])
-    % computes the radial average of the image IMG around the cx,cy point
+function profile = radialAvg(img, radii, smooth, center)
+% profile = radialAvg(img, radii [, smooth=false, center ])
+    % computes the radial average of the image IMG around the center point
     % radii is the vector of radii starting from zero
     % smooth default is false. if true, values are smoothed based on
     % distance from radius
-    % cenx, ceny default values are floor(imsize+1)./2)
+    % center default is img center, i.e. floor(imsize+1)./2
     % Modified from script by Hugo Trentesaux 
     % https://www.mathworks.com/matlabcentral/profile/authors/11871854
 
-    [xdim,ydim] = size(img);
+    imsize = size(img);
     if nargin < 3
         smooth= false;
     end
     if nargin < 4
-        cenx= fix(xdim./2)+1;
-        ceny= fix(ydim./2)+1;
+        center= floor((imsize+1)./2);
     end
-    
-    [X, Y] = meshgrid( (1:xdim)-cenx, (1:ydim)-ceny);
+    [X,Y]= meshgrid((1:imsize(2))-center(2), ...
+                    (1:imsize(1))-center(1));
     R2 = X.^2 + Y.^2;
     profile = zeros(size(radii));
     for idx = 1:length(radii) % radius of the circle
